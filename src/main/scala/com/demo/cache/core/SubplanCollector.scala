@@ -10,6 +10,8 @@ object SubplanCollector {
     nodeSize: Int,
     sourceUnitId: String,
     sourceObjectName: Option[String],
+    rawText:String,
+    queryText:String,
     plan: LogicalPlan
   )
 
@@ -35,7 +37,20 @@ object SubplanCollector {
             nodeSize = representative.nodeSize,
             sourceUnitIds = nodes.map(_.sourceUnitId).distinct.sorted,
             sourceObjectNames = nodes.flatMap(_.sourceObjectName).distinct.sorted,
-            examplePlanText = representative.plan.treeString
+            examplePlanText = representative.plan.treeString,
+            sourceSqls=node
+              .groupBy(n=>(n.sourceUnitId,n.sourceObjectName,n.rawText,n.queryText))
+              .keys
+              .toSeq
+              .map{case (unitId,objectName,rawText,queryText)=>
+                CandidateSourceSql(
+                  unitId=unitId,
+                  objectName=objectName,
+                  rawText=rawText,
+                  queryText=queryText
+                )
+              }
+            .sortBy(_.unitId)
           )
         )
       } else {
@@ -59,6 +74,8 @@ object SubplanCollector {
           nodeSize = size,
           sourceUnitId = unit.unitId,
           sourceObjectName = unit.objectName,
+          rawText = unit.rawText,
+          queryText = unit.queryText,
           plan = node
         )
       }
