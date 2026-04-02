@@ -108,21 +108,38 @@ object MainApp {
   }
 
   private def dumpCandidates(candidates: Seq[GlobalRepeatedCandidate], path: String): Unit = {
-    val writer = new PrintWriter(path)
-    try {
-      candidates.foreach { c =>
-        writer.println("===================================")
-        writer.println(s"fingerprint : ${c.fingerprint}")
-        writer.println(s"occurrences : ${c.occurrences}")
-        writer.println(s"nodeSize    : ${c.nodeSize}")
-        writer.println(s"sourceUnits : ${c.sourceUnitIds.mkString(", ")}")
-        writer.println(s"sourceNames : ${c.sourceObjectNames.mkString(", ")}")
-        writer.println("planText:")
-        writer.println(c.examplePlanText)
+  val writer = new PrintWriter(path)
+  try {
+    candidates.foreach { c =>
+      writer.println("===================================")
+      writer.println(s"fingerprint : ${c.fingerprint}")
+      writer.println(s"occurrences : ${c.occurrences}")
+      writer.println(s"nodeSize    : ${c.nodeSize}")
+      writer.println(s"sourceUnits : ${c.sourceUnitIds.mkString(", ")}")
+      writer.println(s"sourceNames : ${c.sourceObjectNames.mkString(", ")}")
+
+      writer.println("planText:")
+      writer.println(c.examplePlanText)
+      writer.println()
+
+      writer.println("sourceSqls:")
+      c.sourceSqls.foreach { s =>
+        writer.println("-----------------------------------")
+        writer.println(s"unitId     : ${s.unitId}")
+        writer.println(s"objectName : ${s.objectName.getOrElse("N/A")}")
+
+        writer.println("rawText:")
+        writer.println(s.rawText)
+
+        writer.println("queryText:")
+        writer.println(s.queryText)
         writer.println()
       }
-    } finally {
-      writer.close()
+
+      writer.println()
     }
+  } finally {
+    writer.close()
   }
+}
 }
