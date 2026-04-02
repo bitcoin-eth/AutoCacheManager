@@ -38,7 +38,7 @@ object SubplanCollector {
             sourceUnitIds = nodes.map(_.sourceUnitId).distinct.sorted,
             sourceObjectNames = nodes.flatMap(_.sourceObjectName).distinct.sorted,
             examplePlanText = representative.plan.treeString,
-            sourceSqls=node
+            sourceSqls=nodes
               .groupBy(n=>(n.sourceUnitId,n.sourceObjectName,n.rawText,n.queryText))
               .keys
               .toSeq
